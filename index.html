@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>World Nature Conservation Day - Environmental Quiz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .quiz-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 100%;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-header {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quiz-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(255,255,255,0.1) 10px,
+                rgba(255,255,255,0.1) 20px
+            );
+            animation: shimmer 3s linear infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .quiz-header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .quiz-header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .progress-container {
+            padding: 20px;
+            background: #f8f9fa;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            transition: width 0.5s ease;
+            border-radius: 5px;
+        }
+
+        .progress-text {
+            text-align: center;
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .quiz-content {
+            padding: 40px;
+        }
+
+        .question-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            transform: translateY(20px);
+            opacity: 0;
+            animation: slideIn 0.5s ease forwards;
+        }
+
+        @keyframes slideIn {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .question-number {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        .question-text {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            line-height: 1.4;
+        }
+
+        .options {
+            display: grid;
+            gap: 15px;
+        }
+
+        .option {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1em;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option:hover {
+            background: #e3f2fd;
+            border-color: #2196f3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.2);
+        }
+
+        .option.selected {
+            background: #2196f3;
+            color: white;
+            border-color: #1976d2;
+        }
+
+        .option.correct {
+            background: #4caf50;
+            color: white;
+            border-color: #388e3c;
+        }
+
+        .option.incorrect {
+            background: #f44336;
+            color: white;
+            border-color: #d32f2f;
+        }
+
+        .quiz-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .score-display {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .score-icon {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #b8860b;
+        }
+
+        .results {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .results h2 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .final-score {
+            font-size: 3em;
+            font-weight: bold;
+            margin: 20px 0;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .performance-message {
+            font-size: 1.3em;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .excellent {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            color: #155724;
+            border: 2px solid #28a745;
+        }
+
+        .good {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            color: #856404;
+            border: 2px solid #ffc107;
+        }
+
+        .needs-improvement {
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+            color: #721c24;
+            border: 2px solid #dc3545;
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            margin-top: 20px;
+        }
+
+        .fun-fact {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-style: italic;
+        }
+
+        .celebration {
+            animation: bounce 1s ease infinite alternate;
+        }
+
+        @keyframes bounce {
+            from { transform: scale(1); }
+            to { transform: scale(1.05); }
+        }
+
+        @media (max-width: 768px) {
+            .quiz-header h1 {
+                font-size: 2em;
+            }
+            
+            .quiz-content {
+                padding: 20px;
+            }
+            
+            .question-text {
+                font-size: 1.1em;
+            }
+            
+            .quiz-actions {
+                flex-direction: column;
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <h1>🌍 World Nature Conservation Day</h1>
+            <p>Test Your Environmental Knowledge!</p>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">Question 1 of 15</div>
+        </div>
+
+        <div class="quiz-content" id="quizContent">
+            <!-- Quiz content will be inserted here -->
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "What does EPP stand for in environmental contexts?",
+                options: [
+                    "Environmental Protection Policy",
+                    "Ecological Preservation Program",
+                    "Emergency Pollution Prevention",
+                    "Environmental Planning Procedure"
+                ],
+                correct: 0,
+                explanation: "EPP stands for Environmental Protection Policy, which encompasses laws and regulations designed to protect the environment."
+            },
+            {
+                question: "Which international agreement is considered the foundation of modern climate policy?",
+                options: [
+                    "Montreal Protocol",
+                    "Paris Agreement",
+                    "Kyoto Protocol",
+                    "Rio Declaration"
+                ],
+                correct: 1,
+                explanation: "The Paris Agreement (2015) is the current cornerstone of global climate policy, aiming to limit global warming to 1.5°C above pre-industrial levels."
+            },
+            {
+                question: "What is the primary goal of the Endangered Species Act?",
+                options: [
+                    "Control hunting regulations",
+                    "Protect and recover endangered species",
+                    "Manage wildlife populations",
+                    "Create national parks"
+                ],
+                correct: 1,
+                explanation: "The Endangered Species Act's primary purpose is to protect and recover imperiled species and the ecosystems upon which they depend."
+            },
+            {
+                question: "Which principle states that polluters should bear the cost of pollution?",
+                options: [
+                    "Precautionary Principle",
+                    "Polluter Pays Principle",
+                    "Sustainable Development Principle",
+                    "Environmental Justice Principle"
+                ],
+                correct: 1,
+                explanation: "The Polluter Pays Principle holds that those who produce pollution should bear the costs of managing it to prevent damage to human health or the environment."
+            },
+            {
+                question: "What does EIA stand for in environmental policy?",
+                options: [
+                    "Environmental Impact Assessment",
+                    "Ecological Indicator Analysis",
+                    "Environmental Information Act",
+                    "Emergency Intervention Action"
+                ],
+                correct: 0,
+                explanation: "Environmental Impact Assessment (EIA) is a process used to evaluate the environmental consequences of proposed projects before they are carried out."
+            },
+            {
+                question: "Which gas is primarily targeted by the Montreal Protocol?",
+                options: [
+                    "Carbon dioxide",
+                    "Methane",
+                    "Chlorofluorocarbons (CFCs)",
+                    "Nitrous oxide"
+                ],
+                correct: 2,
+                explanation: "The Montreal Protocol specifically targets ozone-depleting substances, primarily CFCs, which damage the ozone layer."
+            },
+            {
+                question: "What is the concept of 'sustainable development' based on?",
+                options: [
+                    "Economic growth only",
+                    "Environmental protection only",
+                    "Meeting present needs without compromising future generations",
+                    "Technological advancement"
+                ],
+                correct: 2,
+                explanation: "Sustainable development meets the needs of the present without compromising the ability of future generations to meet their own needs."
+            },
+            {
+                question: "Which international body oversees the implementation of the Paris Agreement?",
+                options: [
+                    "United Nations Environment Programme (UNEP)",
+                    "Intergovernmental Panel on Climate Change (IPCC)",
+                    "United Nations Framework Convention on Climate Change (UNFCCC)",
+                    "World Meteorological Organization (WMO)"
+                ],
+                correct: 2,
+                explanation: "The UNFCCC serves as the parent treaty of the Paris Agreement and oversees its implementation through regular conferences of the parties."
+            },
+            {
+                question: "What is the main purpose of carbon pricing mechanisms?",
+                options: [
+                    "Generate government revenue",
+                    "Incentivize emission reductions",
+                    "Support fossil fuel industries",
+                    "Increase energy costs"
+                ],
+                correct: 1,
+                explanation: "Carbon pricing puts a price on carbon emissions to incentivize businesses and individuals to reduce their greenhouse gas emissions."
+            },
+            {
+                question: "Which principle requires taking preventive action in the face of environmental uncertainty?",
+                options: [
+                    "Polluter Pays Principle",
+                    "Precautionary Principle",
+                    "Proximity Principle",
+                    "Prevention Principle"
+                ],
+                correct: 1,
+                explanation: "The Precautionary Principle states that lack of full scientific certainty should not postpone measures to prevent environmental degradation."
+            },
+            {
+                question: "What does CITES regulate?",
+                options: [
+                    "International trade in endangered species",
+                    "Climate change mitigation",
+                    "Air pollution control",
+                    "Waste management"
+                ],
+                correct: 0,
+                explanation: "CITES (Convention on International Trade in Endangered Species) regulates international trade in specimens of wild animals and plants."
+            },
+            {
+                question: "Which environmental policy tool uses market mechanisms to achieve environmental goals?",
+                options: [
+                    "Command and control regulations",
+                    "Environmental standards",
+                    "Cap and trade systems",
+                    "Environmental monitoring"
+                ],
+                correct: 2,
+                explanation: "Cap and trade systems are market-based tools that set limits on emissions and allow trading of emission allowances to achieve environmental goals cost-effectively."
+            },
+            {
+                question: "What is the primary focus of the Ramsar Convention?",
+                options: [
+                    "Marine pollution",
+                    "Wetland conservation",
+                    "Forest protection",
+                    "Desert preservation"
+                ],
+                correct: 1,
+                explanation: "The Ramsar Convention focuses on the conservation and wise use of wetlands and their resources."
+            },
+            {
+                question: "Which concept refers to the fair treatment of all people regarding environmental policies?",
+                options: [
+                    "Environmental democracy",
+                    "Environmental justice",
+                    "Environmental equality",
+                    "Environmental rights"
+                ],
+                correct: 1,
+                explanation: "Environmental justice ensures fair treatment and meaningful involvement of all people regardless of race, color, national origin, or income in environmental decision-making."
+            },
+            {
+                question: "What is the main objective of the Convention on Biological Diversity?",
+                options: [
+                    "Climate change mitigation",
+                    "Conservation of biodiversity, sustainable use of components, and fair sharing of benefits",
+                    "Pollution control",
+                    "Renewable energy promotion"
+                ],
+                correct: 1,
+                explanation: "The CBD has three main objectives: conservation of biodiversity, sustainable use of its components, and fair sharing of benefits from genetic resources."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let selectedAnswer = null;
+        let quizCompleted = false;
+
+        function initializeQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            selectedAnswer = null;
+            quizCompleted = false;
+            showQuestion();
+            updateProgress();
+        }
+
+        function showQuestion() {
+            const question = quizData[currentQuestion];
+            const quizContent = document.getElementById('quizContent');
+            
+            quizContent.innerHTML = `
+                <div class="question-card">
+                    <div class="question-number">Question ${currentQuestion + 1}</div>
+                    <div class="question-text">${question.question}</div>
+                    <div class="options">
+                        ${question.options.map((option, index) => `
+                            <div class="option" onclick="selectAnswer(${index})" data-index="${index}">
+                                ${option}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                <div class="quiz-actions">
+                    <div class="score-display">
+                        <div class="score-icon">🏆</div>
+                        Score: ${score}/${quizData.length}
+                    </div>
+                    <button class="btn" onclick="nextQuestion()" id="nextBtn" disabled>
+                        ${currentQuestion === quizData.length - 1 ? 'Finish Quiz' : 'Next Question'}
+                    </button>
+                </div>
+            `;
+        }
+
+        function selectAnswer(index) {
+            if (selectedAnswer !== null) return;
+            
+            selectedAnswer = index;
+            const options = document.querySelectorAll('.option');
+            const question = quizData[currentQuestion];
+            
+            options.forEach((option, i) => {
+                option.style.pointerEvents = 'none';
+                if (i === question.correct) {
+                    option.classList.add('correct');
+                } else if (i === selectedAnswer) {
+                    option.classList.add('incorrect');
+                }
+            });
+            
+            if (selectedAnswer === question.correct) {
+                score++;
+            }
+            
+            // Show explanation
+            setTimeout(() => {
+                const explanation = document.createElement('div');
+                explanation.className = 'fun-fact';
+                explanation.innerHTML = `<strong>💡 Did you know?</strong> ${question.explanation}`;
+                document.querySelector('.question-card').appendChild(explanation);
+            }, 500);
+            
+            document.getElementById('nextBtn').disabled = false;
+            updateScore();
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < quizData.length - 1) {
+                currentQuestion++;
+                selectedAnswer = null;
+                showQuestion();
+                updateProgress();
+            } else {
+                showResults();
+            }
+        }
+
+        function updateProgress() {
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            const percentage = ((currentQuestion + 1) / quizData.length) * 100;
+            
+            progressFill.style.width = percentage + '%';
+            progressText.textContent = `Question ${currentQuestion + 1} of ${quizData.length}`;
+        }
+
+        function updateScore() {
+            const scoreDisplay = document.querySelector('.score-display');
+            scoreDisplay.innerHTML = `
+                <div class="score-icon">🏆</div>
+                Score: ${score}/${quizData.length}
+            `;
+        }
+
+        function showResults() {
+            const percentage = Math.round((score / quizData.length) * 100);
+            let performanceClass, performanceMessage, emoji;
+            
+            if (percentage >= 80) {
+                performanceClass = 'excellent';
+                performanceMessage = 'Outstanding! You\'re an EPP expert! 🌟';
+                emoji = '🎉';
+            } else if (percentage >= 60) {
+                performanceClass = 'good';
+                performanceMessage = 'Great job! You have solid knowledge of EPP! 👍';
+                emoji = '😊';
+            } else {
+                performanceClass = 'needs-improvement';
+                performanceMessage = 'Keep learning! Environmental protection needs your passion! 💪';
+                emoji = '📚';
+            }
+
+            const quizContent = document.getElementById('quizContent');
+            quizContent.innerHTML = `
+                <div class="results">
+                    <h2 class="celebration">${emoji} Quiz Complete!</h2>
+                    <div class="final-score">${score}/${quizData.length}</div>
+                    <div class="final-score">${percentage}%</div>
+                    <div class="performance-message ${performanceClass}">
+                        ${performanceMessage}
+                    </div>
+                    <div class="fun-fact">
+                        <strong>🌱 Remember:</strong> Every action counts in protecting our planet! 
+                        Environmental Protection Policies are tools we use to ensure a sustainable future for all living beings.
+                    </div>
+                    <button class="btn restart-btn" onclick="restartQuiz()">
+                        🔄 Take Quiz Again
+                    </button>
+                </div>
+            `;
+
+            // Hide progress bar
+            document.querySelector('.progress-container').style.display = 'none';
+        }
+
+        function restartQuiz() {
+            document.querySelector('.progress-container').style.display = 'block';
+            initializeQuiz();
+        }
+
+        // Initialize the quiz when the page loads
+        document.addEventListener('DOMContentLoaded', initializeQuiz);
+    </script>
+</body>
+</html>
